@@ -20,5 +20,32 @@ The goals of this project is to make a pipeline between writing posts in Obsidia
 ==To-Do==
 Mermaid diagram of the process?
 
+## Example Front Matter
+
+This is an example of the front matter that I currently use. Some of the fields are specific to the theme that I'm using in Hugo, but I think most of them are useful. At a minimum, all we really need is `title`, `cover.image`, and `type`.
+
+```yaml
+---
+title: "Post Title"
+type: "notes"
+date: 2024-02-15T20:21:22Z
+lastmod: 2024-02-15T20:21:22Z
+draft: true
+showtoc: true
+defaultTheme: auto
+disableThemeToggle: false
+author:
+  - Author
+tags:
+  - Tag1
+  - Tag2
+summary: ""
+cover:
+  image: cover.jpg
+  relative: true
+  hidden: false
+---
+```
+
 ## Setting up Hugo
 ==To-Do==
