@@ -1,0 +1,17 @@
+The goals of this project is to make a pipeline between writing posts in Obsidian.md and publishing them through Hugo. The aim is to make this process as frictionless as possible.
+
+# Structure of this project
+- `test-files/obsidian-vault`: This directory contains the raw `.md` files that would come from Obsidian. This is a place holder for the Obsidian directory we would want to monitor for new posts. Right now it just has some files you can use to test.
+- `test-files/hugo-content`: This is a representation of the `content` directory in a Hugo site. This would be were the content would end up after being processed by the pipeline. You can use it to verify that the pipeline is working as expected.
+
+# Current manual process
+1. Write a post in Obsidian.
+2. Make a directory under `content` inside a matching subdirectory (like `notes`) for the post.
+3. Copy the `.md` file from Obsidian to the new directory and rename it to `index.md`.
+4. Copy the thumbnail image to the new directory. The thumbnail is defined in the `cover:` field in the front matter of the `.md` file.
+5. Find any image links in the `.md` file and copy the images to the new directory.
+6. Rename the image links in the `.md` file to make more sense.
+7. Update the image links to center the images in the post.
+8. Run Hugo command to build the site.
+9. Check the site to make sure the post looks good.
+10. Run an rsync command to copy the new post to the prod server.
