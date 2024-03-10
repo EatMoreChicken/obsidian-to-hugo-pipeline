@@ -15,3 +15,4 @@ The goals of this project is to make a pipeline between writing posts in Obsidia
 8. Run Hugo command to build the site.
 9. Check the site to make sure the post looks good.
 10. Run an rsync command to copy the new post to the prod server.
+
