@@ -1,6 +1,6 @@
 ---
 title: "The Great Sock Mystery: Where Do They Disappear To?"
-type: "notes"
+type: "books"
 cover: the_great_sock_mystery.png
 ---
 

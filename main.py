@@ -159,6 +159,25 @@ for file in obsidian_files_dict:
             for field in excepted_frontmatter_fields:
                 obsidian_files_dict[file][field] = yaml_contents[field]
 
+## Building Hugo Content
+### Within the Hugo directory, but a new directory for each "type" of content
+
+#### Get list of "types" from the obsidian files dictionary
+types = []
+for file in obsidian_files_dict:
+    # Check if the file has a "success" status before checking for frontmatter
+    if obsidian_files_dict[file]["status"] == "failed":
+        continue
+
+    if obsidian_files_dict[file]["type"] not in types:
+        types.append(obsidian_files_dict[file]["type"])
+
+#### Create a directory for each type
+for type in types:
+    type_dir = os.path.join(hugo_dir, type)
+    if not os.path.exists(type_dir):
+        os.makedirs(type_dir)
+
 
 # Print the files in a list format
 for file in obsidian_files_dict:
@@ -170,3 +189,5 @@ for file in obsidian_files_dict:
     for field in excepted_frontmatter_fields:
         print(f"- {field}: {obsidian_files_dict[file].get(field, '')}")
     print()
+
+logging.debug(f"Types: {types}")

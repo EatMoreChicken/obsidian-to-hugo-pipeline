@@ -4,6 +4,9 @@ The goals of this project is to make a pipeline between writing posts in Obsidia
 - `test-files/obsidian-vault`: This directory contains the raw `.md` files that would come from Obsidian. This is a place holder for the Obsidian directory we would want to monitor for new posts. Right now it just has some files you can use to test. The files in this directory are left messy on purpose to simulate the way they would come from Obsidian.
 - `test-files/hugo-content`: This is a representation of the `content` directory in a Hugo site. This would be were the content would end up after being processed by the pipeline. You can use it to verify that the pipeline is working as expected.
 
+## Project To-Do
+- [ ] Add more logging
+
 ## Current manual process
 1. Write a post in Obsidian.
 2. Make a directory under `content` inside a matching subdirectory (like `notes`) for the post.
