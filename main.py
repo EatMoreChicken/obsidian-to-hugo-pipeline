@@ -10,6 +10,8 @@ import os
 # pip install pyyaml
 import yaml
 import json
+# I like this, but I think there might be a better library for this
+from prettytable import PrettyTable
 
 ## Setting up Config Parser
 config = configparser.ConfigParser()
@@ -66,5 +68,69 @@ for file in obsidian_files_dict:
             obsidian_files_dict[file]["status"] = "success"
             obsidian_files_dict[file]["current_check"] = "Check if the file is empty"
 
-# Pretty print the dictionary
-logging.debug(json.dumps(obsidian_files_dict, indent=2))
+### Check if the files have frontmatter
+for file in obsidian_files_dict:
+    # Check if the file has a "success" status before checking for frontmatter
+    if obsidian_files_dict[file]["status"] == "failed":
+        continue
+    with open(obsidian_files_dict[file]["path"], 'r') as f:
+        file_contents = f.read()
+        if file_contents.startswith("---"):
+            obsidian_files_dict[file]["status"] = "success"
+            obsidian_files_dict[file]["current_check"] = "Check if the file has frontmatter"
+        else:
+            obsidian_files_dict[file]["status"] = "failed"
+            obsidian_files_dict[file]["current_check"] = "Check if the file has frontmatter"
+            obsidian_files_dict[file]["reason"] = "File does not have frontmatter"
+
+### Check if the frontmatter is valid YAML
+for file in obsidian_files_dict:
+    # Check if the file has a "success" status before checking for frontmatter
+    if obsidian_files_dict[file]["status"] == "failed":
+        continue
+    with open(obsidian_files_dict[file]["path"], 'r') as f:
+        file_contents = f.read()
+        if file_contents.startswith("---"):
+            try:
+                yaml_contents = yaml.safe_load(file_contents.split("---")[1])
+                obsidian_files_dict[file]["status"] = "success"
+                obsidian_files_dict[file]["current_check"] = "Check if the frontmatter is valid YAML"
+            except yaml.YAMLError as exc:
+                obsidian_files_dict[file]["status"] = "failed"
+                obsidian_files_dict[file]["current_check"] = "Check if the frontmatter is valid YAML"
+                obsidian_files_dict[file]["reason"] = "Frontmatter is not valid YAML"
+
+### Check if the required frontmatter fields are present
+excepted_frontmatter_fields = config['frontmatter']['required_fields'].split(",")
+
+#### Removing whitespace from the list
+excepted_frontmatter_fields = [field.strip() for field in excepted_frontmatter_fields]
+
+for file in obsidian_files_dict:
+    # Check if the file has a "success" status before checking for frontmatter
+    if obsidian_files_dict[file]["status"] == "failed":
+        continue
+    # Parse the frontmatter
+    with open(obsidian_files_dict[file]["path"], 'r') as f:
+        file_contents = f.read()
+        if file_contents.startswith("---"):
+            yaml_contents = yaml.safe_load(file_contents.split("---")[1])
+            # Check if the required fields are present
+            for field in excepted_frontmatter_fields:
+                if field not in yaml_contents:
+                    obsidian_files_dict[file]["status"] = "failed"
+                    obsidian_files_dict[file]["current_check"] = "Check if the required frontmatter fields are present"
+                    obsidian_files_dict[file]["reason"] = f"Frontmatter does not have the required field: {field}"
+                else:
+                    obsidian_files_dict[file]["status"] = "success"
+                    obsidian_files_dict[file]["current_check"] = "Check if the required frontmatter fields are present"
+
+
+
+# Print the failed files in a human readable table with colored output
+x = PrettyTable()
+x.field_names = ["File Name", "Status", "Reason"]
+for file in obsidian_files_dict:
+    if obsidian_files_dict[file]["status"] == "failed":
+        x.add_row([file, obsidian_files_dict[file]["status"], obsidian_files_dict[file]["reason"]])
+print(x)
