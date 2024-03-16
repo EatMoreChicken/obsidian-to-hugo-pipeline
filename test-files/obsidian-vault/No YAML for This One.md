@@ -1,0 +1,2 @@
+## Why No YAML for This One?
+YAML is a great way to add metadata to your notes, but something you want to just break out of the mold and write a note without any metadata. This is a note without any YAML metadata. It's just a note. Sometimes.
