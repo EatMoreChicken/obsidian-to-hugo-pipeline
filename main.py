@@ -30,6 +30,37 @@ if not os.path.exists(hugo_dir):
     logging.error(f"Hugo directory does not exist at {hugo_dir}")
     raise SystemExit
 
+## Function to set the status of a file
+def set_status(file, status, current_check, reason):
+    # Check if the required arguments are present
+    if not all([file, status, current_check]):
+        logging.error("All arguments are required")
+        raise ValueError("All arguments are required")
+    
+    # If the "reason" argument is not present, set it to "None"
+    if not reason:
+        reason = "None"
+
+    obsidian_files_dict[file]["status"] = status
+    obsidian_files_dict[file]["current_check"] = current_check
+    obsidian_files_dict[file]["reason"] = reason
+
+    # Set the status of the file
+    if status == "success":
+        obsidian_files_dict[file]["status"] = "success"
+    else:
+        obsidian_files_dict[file]["status"] = "failed"
+    
+    # Set the current check
+    # If a current check already exists, move it to "last_check"
+    if "current_check" in obsidian_files_dict[file]:
+        obsidian_files_dict[file]["last_check"] = obsidian_files_dict[file]["current_check"]
+    
+    obsidian_files_dict[file]["current_check"] = current_check
+
+    # Set the reason
+    obsidian_files_dict[file]["reason"] = reason
+    return
 
 ## Build Dictionary of Obsidian Files with metadata
 ### Make a dictionary of all the .md files in the obsidian directory
@@ -118,14 +149,10 @@ for file in obsidian_files_dict:
             # Check if the required fields are present
             for field in excepted_frontmatter_fields:
                 if field not in yaml_contents:
-                    obsidian_files_dict[file]["status"] = "failed"
-                    obsidian_files_dict[file]["current_check"] = "Check if the required frontmatter fields are present"
-                    obsidian_files_dict[file]["reason"] = f"Frontmatter does not have the required field: {field}"
+                    set_status(file, "failed", "Check if the required frontmatter fields are present", f"Frontmatter does not have the required field: {field}")
                 else:
                     obsidian_files_dict[file]["status"] = "success"
                     obsidian_files_dict[file]["current_check"] = "Check if the required frontmatter fields are present"
-
-
 
 # Print the failed files in a human readable table with colored output
 x = PrettyTable()
