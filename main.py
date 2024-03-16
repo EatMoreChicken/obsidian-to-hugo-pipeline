@@ -10,8 +10,6 @@ import os
 # pip install pyyaml
 import yaml
 import json
-# I like this, but I think there might be a better library for this
-from prettytable import PrettyTable
 
 ## Setting up Config Parser
 config = configparser.ConfigParser()
@@ -40,9 +38,7 @@ def set_status(file, status, current_check, reason):
     # If the "reason" argument is not present, set it to "None"
     if not reason:
         reason = "None"
-
-    obsidian_files_dict[file]["status"] = status
-    obsidian_files_dict[file]["current_check"] = current_check
+    
     obsidian_files_dict[file]["reason"] = reason
 
     # Set the status of the file
@@ -57,9 +53,6 @@ def set_status(file, status, current_check, reason):
         obsidian_files_dict[file]["last_check"] = obsidian_files_dict[file]["current_check"]
     
     obsidian_files_dict[file]["current_check"] = current_check
-
-    # Set the reason
-    obsidian_files_dict[file]["reason"] = reason
     return
 
 ## Build Dictionary of Obsidian Files with metadata
@@ -154,10 +147,26 @@ for file in obsidian_files_dict:
                     obsidian_files_dict[file]["status"] = "success"
                     obsidian_files_dict[file]["current_check"] = "Check if the required frontmatter fields are present"
 
-# Print the failed files in a human readable table with colored output
-x = PrettyTable()
-x.field_names = ["File Name", "Status", "Reason"]
+### Pull the required frontmatter fields into the dictionary
 for file in obsidian_files_dict:
+    # Check if the file has a "success" status before checking for frontmatter
     if obsidian_files_dict[file]["status"] == "failed":
-        x.add_row([file, obsidian_files_dict[file]["status"], obsidian_files_dict[file]["reason"]])
-print(x)
+        continue
+    with open(obsidian_files_dict[file]["path"], 'r') as f:
+        file_contents = f.read()
+        if file_contents.startswith("---"):
+            yaml_contents = yaml.safe_load(file_contents.split("---")[1])
+            for field in excepted_frontmatter_fields:
+                obsidian_files_dict[file][field] = yaml_contents[field]
+
+
+# Print the files in a list format
+for file in obsidian_files_dict:
+    print(f"File: {file}")
+    print(f"- Status: {obsidian_files_dict[file]['status']}")
+    print(f"- Current Check: {obsidian_files_dict[file]['current_check']}")
+    if obsidian_files_dict[file]['status'] == "failed":
+        print(f"- Reason: {obsidian_files_dict[file]['reason']}")
+    for field in excepted_frontmatter_fields:
+        print(f"- {field}: {obsidian_files_dict[file].get(field, '')}")
+    print()
