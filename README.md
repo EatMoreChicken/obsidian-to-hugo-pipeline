@@ -6,6 +6,8 @@ The goals of this project is to make a pipeline between writing posts in Obsidia
 
 ## Project To-Do
 - [ ] Add more logging
+- [ ] Convert the steps into functions. (The sequence of functions will be run against each file, one at a time.)
+- [ ] Function to clean up the hugo directory
 
 ## Current manual process
 1. Write a post in Obsidian.
